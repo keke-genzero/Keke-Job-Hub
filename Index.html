@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Hub — Kiki Tse</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #F5F5F5;
+    --surface:  #FFFFFF;
+    --surface2: #DFF1F1;
+    --accent:   #BBD5DA;
+    --red:      #FF0000;
+    --border:   #BBD5DA;
+    --border2:  #9DBFC5;
+    --text:     #1A2B2E;
+    --text2:    #4A6670;
+    --text3:    #7A9EA8;
+
+    --green-bg: #DFF1F1; --green-text: #1A5C5C; --green-border: #BBD5DA;
+    --amber-bg: #FFF3DC; --amber-text: #7A5200; --amber-border: #F0CC80;
+    --coral-bg: #FFE8E8; --coral-text: #8B0000; --coral-border: #FFB3B3;
+    --red-light: #FFE8E8; --red-text: #CC0000;
+
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--text);
+    color: var(--surface2);
+    padding: 2.25rem 2.5rem 1.75rem;
+    position: relative; overflow: hidden;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute; bottom: -50px; right: -50px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 36px solid rgba(191,213,218,0.12);
+  }
+  .header-inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .brand { font-size: 28px; font-weight: 600; letter-spacing: -0.8px; color: #F5F5F5; }
+  .brand span { color: #FF0000; }
+  .header-sub { font-size: 12px; color: rgba(223,241,241,0.55); margin-top: 5px; font-family: 'DM Mono', monospace; }
+  .header-right { text-align: right; font-size: 11px; color: rgba(223,241,241,0.4); font-family: 'DM Mono', monospace; line-height: 1.6; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat { background: var(--surface); padding: 1.25rem 1.5rem; }
+  .stat-num { font-size: 26px; font-weight: 600; color: var(--text); letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 13px 22px;
+    border: none; border-bottom: 2px solid transparent;
+    background: none; color: var(--text2);
+    cursor: pointer; transition: all 0.15s;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--red); }
+
+  /* ── MAIN ── */
+  .main { max-width: 920px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── FILTERS ── */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.75rem; }
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 7px 16px; border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface); color: var(--text2);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--text); color: var(--text); }
+  .filter-btn.active { background: var(--text); color: #F5F5F5; border-color: var(--text); }
+
+  /* ── TIER LABELS ── */
+  .tier-label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500;
+    padding: 8px 14px; border-radius: var(--radius);
+    margin-bottom: 12px;
+  }
+  .tier-label.A { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+  .tier-label.B { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+  .tier-label.C { background: var(--coral-bg); color: var(--coral-text); border: 1px solid var(--coral-border); }
+  .tier-section { margin-bottom: 2rem; }
+
+  /* ── JOB CARDS ── */
+  .job-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem; margin-bottom: 10px;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .job-card:hover { box-shadow: 0 2px 14px rgba(0,0,0,0.07); border-color: var(--border2); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .job-title { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.35; }
+  .job-company { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .score-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    padding: 4px 12px; border-radius: 100px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .score-pill.A { background: var(--green-bg); color: var(--green-text); }
+  .score-pill.B { background: var(--amber-bg); color: var(--amber-text); }
+  .score-pill.C { background: var(--coral-bg); color: var(--coral-text); }
+  .card-meta { display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; }
+  .meta { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tag {
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px; border-radius: 6px;
+    background: var(--surface2); color: var(--green-text);
+    border: 1px solid var(--border);
+  }
+  .card-bottom {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;
+    padding-top: 10px; border-top: 1px solid var(--border);
+  }
+  .reason { font-size: 12px; color: var(--text2); line-height: 1.55; font-style: italic; flex: 1; }
+  .apply-link {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface); color: var(--text);
+    text-decoration: none; white-space: nowrap; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .apply-link:hover { background: var(--text); color: #F5F5F5; border-color: var(--text); }
+
+  /* ── CV TIPS ── */
+  .tips-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.5rem; margin-top: 0.5rem;
+  }
+  .tips-title { font-size: 15px; font-weight: 600; margin-bottom: 1rem; }
+  .tip { display: flex; gap: 14px; margin-bottom: 14px; }
+  .tip-num {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+    min-width: 28px; height: 28px;
+    background: var(--surface2); color: var(--green-text);
+    border: 1px solid var(--border);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .tip-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .tip-text strong { color: var(--text); font-weight: 500; }
+
+  /* ── NEWS ── */
+  .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 1.5rem; }
+  .news-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem;
+    transition: box-shadow 0.15s;
+  }
+  .news-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .news-source {
+    font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.7px;
+    color: var(--text3); margin-bottom: 6px; font-family: 'DM Mono', monospace;
+  }
+  .news-headline { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
+  .news-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .news-tag {
+    display: inline-block; margin-top: 10px;
+    font-size: 10px; font-weight: 500;
+    padding: 3px 9px; border-radius: 6px;
+    background: var(--surface2); color: var(--green-text);
+    border: 1px solid var(--border);
+  }
+  .news-tag.red { background: var(--red-light); color: var(--red-text); border-color: #FFB3B3; }
+  .news-tag.amber { background: var(--amber-bg); color: var(--amber-text); border-color: var(--amber-border); }
+
+  .market-summary {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .market-summary-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--green-text); }
+  .market-metrics { display: flex; gap: 24px; flex-wrap: wrap; }
+  .market-metric { }
+  .mm-val { font-size: 20px; font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; }
+  .mm-label { font-size: 11px; color: var(--text2); margin-top: 1px; }
+
+  /* ── FOOTER ── */
+  .footer { text-align: center; font-size: 11px; color: var(--text3); padding: 2rem; font-family: 'DM Mono', monospace; }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .card-top { flex-direction: column; }
+    .score-pill { align-self: flex-start; }
+    .header-inner { flex-direction: column; gap: 6px; }
+    .market-metrics { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-inner">
+    <div>
+      <div class="brand">Job <span>Hub</span></div>
+      <div class="header-sub">Kiki Tse · PMO & Project Management · Hong Kong · 10+ Years</div>
+    </div>
+    <div class="header-right">Generated<br>May 2026</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat"><div class="stat-num">15</div><div class="stat-label">Matched Roles</div></div>
+  <div class="stat"><div class="stat-num">6</div><div class="stat-label">Tier A — Apply Now</div></div>
+  <div class="stat"><div class="stat-num">10+ yrs</div><div class="stat-label">Experience</div></div>
+  <div class="stat"><div class="stat-num">$51K</div><div class="stat-label">Market Median (HKD/mo)</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('jobs', this)">Job Matches</button>
+  <button class="tab-btn" onclick="switchTab('news', this)">HK Market News</button>
+  <button class="tab-btn" onclick="switchTab('tips', this)">CV Optimisation</button>
+</div>
+
+<div class="main">
+
+  <!-- TAB: JOBS -->
+  <div id="tab-jobs" class="tab-content active">
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterJobs('all',this)">All (15)</button>
+      <button class="filter-btn" onclick="filterJobs('A',this)">🟢 Tier A (6)</button>
+      <button class="filter-btn" onclick="filterJobs('B',this)">🟡 Tier B (5)</button>
+      <button class="filter-btn" onclick="filterJobs('C',this)">🟠 Tier C (4)</button>
+    </div>
+    <div id="jobs-container"></div>
+  </div>
+
+  <!-- TAB: NEWS -->
+  <div id="tab-news" class="tab-content">
+
+    <div class="market-summary">
+      <div class="market-summary-title">HK Labour Market Snapshot · Q1 2026</div>
+      <div class="market-metrics">
+        <div class="market-metric"><div class="mm-val">3.7%</div><div class="mm-label">Unemployment Rate (Jan–Mar 2026)</div></div>
+        <div class="market-metric"><div class="mm-val">34%</div><div class="mm-label">Employers Planning Headcount Growth</div></div>
+        <div class="market-metric"><div class="mm-val">4–5%</div><div class="mm-label">Average Salary Increment 2026</div></div>
+        <div class="market-metric"><div class="mm-val">10–15%</div><div class="mm-label">Typical Pay Rise for Job Movers</div></div>
+      </div>
+    </div>
+
+    <div class="news-grid">
+
+      <div class="news-card">
+        <div class="news-source">HKSAR Gov · May 2026</div>
+        <div class="news-headline">Unemployment edges down to 3.7% in Q1 2026</div>
+        <div class="news-body">The seasonally adjusted unemployment rate dipped 0.1 ppt to 3.7% for Jan–Mar 2026. Underemployment also fell to 1.6%. The government forecasts GDP growth of 2.5–3.5% for the full year, underpinning continued labour market stability.</div>
+        <span class="news-tag">Economy</span>
+      </div>
+
+      <div class="news-card">
+        <div class="news-source">Morgan McKinley · Feb 2026</div>
+        <div class="news-headline">2026 defined by "digital acceleration" — multi-hat professionals most valued</div>
+        <div class="news-body">Hiring will favour professionals who blend core expertise with digital skills — e.g. finance + data analytics, or HR + HRIS. Salary budgets projected at 4%, with 10–15% uplifts for job movers and 15–20%+ reserved for AI, data, and cybersecurity specialists.</div>
+        <span class="news-tag amber">PMO Relevant</span>
+      </div>
+
+      <div class="news-card">
+        <div class="news-source">KPMG Employment Outlook · Mar 2026</div>
+        <div class="news-headline">Employers cautious but selective; stability overtakes salary as top candidate priority</div>
+        <div class="news-body">Only 3% of employers describe hiring as "extremely challenging" — down from 11% in 2025. Workers are increasingly in "wait-and-see" mode, with 21% planning a career change (vs 28% last year). Insurance and financial services show strongest retention intent.</div>
+        <span class="news-tag">Talent Trends</span>
+      </div>
+
+      <div class="news-card">
+        <div class="news-source">Robert Walters · 2026</div>
+        <div class="news-headline">Insurance and public sector hiring steady; AI talent demand intensifies</div>
+        <div class="news-body">Insurance and public sector hiring remains solid, driven by digitalisation and operational resilience. Demand for AI, data scientists, and ML engineers is strong. Hong Kong's new stablecoin licensing regime (Aug 2025) is also fuelling compliance and blockchain roles.</div>
+        <span class="news-tag amber">PMO Relevant</span>
+      </div>
+
+      <div class="news-card">
+        <div class="news-source">Randstad · Dec 2025</div>
+        <div class="news-headline">HK ranks 4th globally in talent competitiveness, rising 12 places in two years</div>
+        <div class="news-body">Growth sectors include Northern Metropolis development, AI/Data Science, and life/health tech. Employers are extremely selective due to perceived talent surplus, but digital transformation is creating real scarcity in PMO, governance, and transformation roles.</div>
+        <span class="news-tag">Outlook</span>
+      </div>
+
+      <div class="news-card">
+        <div class="news-source">Ambition HK · 2026</div>
+        <div class="news-headline">Contract hiring rises; 34% of employers cite flexibility as primary driver</div>
+        <div class="news-body">Tech hiring remains measured but resilient in 2026, with demand persisting for cybersecurity, cloud, data, and automation. Contract roles are increasingly used as a pathway to permanent employment. 28% of employers view contract hiring as a strategic talent pipeline.</div>
+        <span class="news-tag red">For Kiki: Contract roles are viable entry points</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: CV TIPS -->
+  <div id="tab-tips" class="tab-content">
+    <div class="tips-section">
+      <div class="tips-title">CV Optimisation — Targeting Tier A Roles</div>
+      <div class="tip">
+        <div class="tip-num">1</div>
+        <div class="tip-text"><strong>Quantify financial outcomes:</strong> The current CV lacks concrete numbers (e.g. "managed HK$XXM budget", "reduced variance by XX%"). Tier A roles at AIA, Manulife, and HSBC require demonstrated financial governance. Add managed budget scale and cost/efficiency gains to your AIA section.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-num">2</div>
+        <div class="tip-text"><strong>Emphasise insurance domain knowledge:</strong> Your AIA experience is strong but the CV doesn't fully articulate your understanding of insurance products (AIA+, CDP, Vitality) as a business stakeholder. Consider adding a line: "Insurance domain: Life &amp; Health digital products, regulatory compliance, product governance."</div>
+      </div>
+      <div class="tip">
+        <div class="tip-num">3</div>
+        <div class="tip-text"><strong>Strengthen Agile delivery evidence:</strong> The CV mentions Agile but lacks specific delivery metrics (e.g. "led X sprints", "delivered Y features on schedule"). Banks and insurers in Tier A rank Agile delivery experience highly — add sprint counts or story-point completion rates to your AIA and CLP sections.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Job Hub · Kiki Tse · Hong Kong 2026</div>
+
+<script>
+const jobs = [
+  { tier:'A', score:95, title:'IT Project Manager (Digital Transformation) – Insurance', company:'Various Insurers (AIA / FWD / Manulife)', area:'Hong Kong Island', salary:'$65,000–$80,000', tags:['Insurance','Agile','PMO','Digital Transformation','PMP'], reason:'Perfect match: your AIA PMO background + insurance sector knowledge + PMP certification are all required — very strong competitive advantage.', url:'https://hk.jobsdb.com/hk/jobs/information-technology/project-manager' },
+  { tier:'A', score:93, title:'PMO Manager / IT PMO Project Manager', company:'Banking & Financial Services (HSBC / Hang Seng)', area:'Central / Kowloon', salary:'$55,000–$75,000', tags:['PMO Governance','Financial Control','Agile','Stakeholder Mgmt','JIRA'], reason:'Your PMO governance, financial planning, and JIRA experience directly match banking PMO requirements.', url:'https://hk.jobsdb.com/pmo-manager-jobs' },
+  { tier:'A', score:91, title:'Senior IT Project Coordinator / Manager', company:'CLP Power / Utilities Sector', area:'Tsing Yi / Tsuen Wan', salary:'$45,000–$60,000', tags:['IT Projects','Change Management','SharePoint','Vendor Management'], reason:'You worked directly at CLP — your sector knowledge and SharePoint Migration experience are a perfect fit.', url:'https://hk.jobsdb.com/it-project-manager-jobs' },
+  { tier:'A', score:90, title:'Digital Project Manager (TDA PMO)', company:'Insurance MNC (via Michael Page)', area:'Hong Kong Island', salary:'$60,000–$75,000', tags:['Digital Delivery','PMO','Insurance','Cross-functional','Agile'], reason:'Role requires insurance PMO digital delivery experience — your AIA TDA background is a direct advantage.', url:'https://www.michaelpage.com.hk/jobs/project-manager' },
+  { tier:'A', score:88, title:'PMO / Portfolio Manager (IT Governance)', company:'IT Consulting / Technology Firm', area:'Kwun Tong / Kowloon Bay', salary:'$55,000–$70,000', tags:['Portfolio Mgmt','Governance','Agile','PMP','Confluence'], reason:'Role requires PMO governance and portfolio oversight — your AIA multi-initiative management experience is directly relevant.', url:'https://hk.jobsdb.com/project-management-pmp-jobs' },
+  { tier:'A', score:86, title:'Business Operations Specialist / Manager', company:'Microsoft / Tech MNC', area:'HK Island / Kowloon', salary:'$50,000–$65,000', tags:['Power BI','CRM','Operations','Process Optimisation','Dynamics'], reason:'You held a near-identical role at Microsoft (Power BI, CRM, e-invoicing) — returning to a similar environment gives you a strong competitive edge.', url:'https://hk.indeed.com/q-business-operations-manager-jobs.html' },
+  { tier:'B', score:83, title:'IT Project Manager (Retail / Consumer Tech)', company:'Retail Tech Company (JobsDB listing)', area:'New Territories / Kowloon', salary:'$45,000–$60,000', tags:['IT Projects','Budget Mgmt','Team Leadership','Agile'], reason:'Strong skill alignment, but no retail sector experience — address the industry switch clearly in your cover letter.', url:'https://hk.jobsdb.com/startup-project-manager-jobs' },
+  { tier:'B', score:81, title:'Management Consultant – Change Management', company:'Protiviti / Big 4 Consulting', area:'Mong Kok / Central', salary:'$33,000–$50,000', tags:['Change Management','Process Improvement','Financial Services','Stakeholder Mgmt'], reason:'Your change management and process optimisation experience is a fit, but consulting track record is relatively thin.', url:'https://hk.jobsdb.com/management-consulting-jobs' },
+  { tier:'B', score:79, title:'Transformation Manager / COO Office', company:'Financial Institution (StanChart / BOCHK)', area:'Central', salary:'$50,000–$65,000', tags:['Transformation','Cross-functional','Strategic Planning','Stakeholder Mgmt'], reason:'Transformation project experience aligns well, but COO-level visibility requires stronger executive stakeholder case studies.', url:'https://hk.jobsdb.com/digital-transformation-jobs' },
+  { tier:'B', score:78, title:'Project Manager (PMO) – Healthcare', company:'EC Healthcare', area:'Quarry Bay', salary:'$40,000–$55,000', tags:['PMO','Healthcare IT','Project Governance','JIRA'], reason:'PMO skills are directly transferable, but no healthcare sector background — industry learning curve is the key gap.', url:'https://hk.jobsdb.com/pma-jobs' },
+  { tier:'B', score:75, title:'Senior Business Analyst / Project Manager', company:'Logistics / Supply Chain (BDP Asia)', area:'Kwai Fong', salary:'$35,000–$48,000', tags:['Business Analysis','System Enhancement','UAT','Stakeholder Mgmt'], reason:'Your AVNET BA background applies, but the current CV is PMO-heavy — reposition to highlight BA skills before applying.', url:'https://hk.jobsdb.com/business-analyst-jobs' },
+  { tier:'C', score:68, title:'RPA / Process Automation Project Lead', company:'Technology Companies (Various)', area:'Kwun Tong / Science Park', salary:'$40,000–$55,000', tags:['RPA','Process Automation','Change Management','Power Platform'], reason:'CLP RPA adoption experience helps, but deep technical requirements are a gap — consider a Power Automate certification first.', url:'https://hk.indeed.com/q-rpa-project-manager-jobs.html' },
+  { tier:'C', score:65, title:'Programme Manager – AI / Digital Innovation', company:'CBRE / Property Management', area:'Sai Ying Pun', salary:'$45,000–$60,000', tags:['Programme Mgmt','Digital Innovation','Stakeholder Mgmt','Facilities'], reason:'No AI project or real estate background — supplement your CV with AI project delivery examples before applying.', url:'https://hk.jobsdb.com/pmo-lead-jobs' },
+  { tier:'C', score:62, title:'Data / BI Project Manager', company:'Financial Services (Various)', area:'Central / Admiralty', salary:'$45,000–$58,000', tags:['Power BI','Data Analytics','Stakeholder Mgmt','Financial Services'], reason:'Power BI user experience is a plus, but data engineering is not your background — close the gap with SQL or data governance skills.', url:'https://hk.jobsdb.com/power-bi-jobs' },
+  { tier:'C', score:58, title:'IT Operations Project Manager (Telecom)', company:'PCCW Global / Telecom Sector', area:'Kwun Tong', salary:'$40,000–$50,000', tags:['IT Operations','Network Projects','Vendor Mgmt','Project Governance'], reason:'PM skills transfer well, but lack of telecom technical knowledge weakens the application — research sector specifics first.', url:'https://hk.indeed.com/Project-Manager-jobs' },
+];
+
+const tierConfig = {
+  A: { label:'🟢 Tier A — Strong Match (85–100): Apply immediately', cls:'A' },
+  B: { label:'🟡 Tier B — Worth Applying (70–84): Good odds, go for it', cls:'B' },
+  C: { label:'🟠 Tier C — Backup Options (55–69): Tailor CV first', cls:'C' },
+};
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function filterJobs(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderJobs(filter);
+}
+
+function renderJobs(filter) {
+  const container = document.getElementById('jobs-container');
+  const tiers = filter === 'all' ? ['A','B','C'] : [filter];
+  let html = '';
+  tiers.forEach(tier => {
+    const list = jobs.filter(j => j.tier === tier);
+    const cfg = tierConfig[tier];
+    html += `<div class="tier-section"><div class="tier-label ${cfg.cls}">${cfg.label}</div>`;
+    list.forEach(j => {
+      html += `<div class="job-card">
+        <div class="card-top">
+          <div>
+            <div class="job-title">${j.title}</div>
+            <div class="job-company">${j.company}</div>
+          </div>
+          <span class="score-pill ${j.tier}">${j.score}/100</span>
+        </div>
+        <div class="card-meta">
+          <span class="meta">📍 ${j.area}</span>
+          <span class="meta">💰 HKD ${j.salary}/mo</span>
+        </div>
+        <div class="tags">${j.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        <div class="card-bottom">
+          <span class="reason">${j.reason}</span>
+          <a href="${j.url}" target="_blank" rel="noopener" class="apply-link">Apply ↗</a>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+renderJobs('all');
+</script>
+</body>
+</html>
